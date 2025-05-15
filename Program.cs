@@ -18,6 +18,8 @@ builder.Services.AddDbContext<DemoDbContext>(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<demo.Repositories.ProductRepository>();
 builder.Services.AddScoped<demo.Services.ProductService>();
+builder.Services.AddScoped<demo.Repositories.AccountRepository>();
+builder.Services.AddScoped<demo.Services.LoginService>();
 
 // JWT
 builder.Services.AddSingleton<JwtService>();

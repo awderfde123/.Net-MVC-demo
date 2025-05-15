@@ -5,11 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 public class LoginController : Controller
 {
     private readonly JwtService _jwt;
-
-    public LoginController(JwtService jwt)
+    private readonly LoginService _service;
+    public LoginController(JwtService jwt, LoginService service)
     {
         _jwt = jwt;
+        _service = service;
     }
+
     [HttpGet]
     public IActionResult Index()
     {
@@ -19,7 +21,8 @@ public class LoginController : Controller
     [HttpPost]
     public IActionResult Index(string username, string password)
     {
-        if (username == "admin" && password == "123456")
+        var user = _service.GetLoginByUserName(username);
+        if (user != null)
         {
             var token = _jwt.GenerateToken(username, TimeSpan.FromHours(1));
             Response.Cookies.Append("access_token", token, new CookieOptions
