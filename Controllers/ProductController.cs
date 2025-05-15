@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using demo.Services;
 using demo.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace demo.Controllers
 {
@@ -13,6 +14,7 @@ namespace demo.Controllers
             _service = service;
         }
         [HttpGet]
+        [Authorize]
         public IActionResult Index()
         {
             var products = _service.GetProducts();
@@ -20,6 +22,7 @@ namespace demo.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult Detail(int? id)
         {
             if (id == null)
@@ -33,6 +36,7 @@ namespace demo.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IActionResult Detail(Product product)
         {
             if (!ModelState.IsValid)
@@ -47,6 +51,7 @@ namespace demo.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IActionResult Delete(int id)
         {
             _service.DeleteProduct(id);
