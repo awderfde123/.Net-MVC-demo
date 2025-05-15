@@ -1,0 +1,31 @@
+﻿@model demo.Models.Product
+@{
+    ViewData["Title"] = "產品詳細";
+    bool isNew = Model?.Id == 0;
+}
+
+<form asp-action="Detail" method="post">  
+    <input type="hidden" name="Id" value="@Model.Id" />  
+    <div class="form-group">  
+        <label asp-for="Name">產品名稱</label>  
+        <input asp-for="Name" class="form-control" />  
+        <span asp-validation-for="Name" class="text-danger"></span>  
+
+        <label asp-for="Stack">產品數量</label>  
+        <input asp-for="Stack" class="form-control" />  
+        <span asp-validation-for="Stack" class="text-danger"></span>  
+    </div>  
+    <br />  
+    <button type="submit" class="btn btn-success">儲存</button>  
+</form>  
+
+@if (!isNew)  
+{  
+    <form asp-action="Delete" asp-route-id="@Model.Id" method="post" style="display:inline;">  
+        @Html.AntiForgeryToken()  
+        <button type="submit" class="btn btn-danger" onclick="return confirm('確定要刪除嗎？')">刪除</button>  
+    </form>  
+}  
+
+<br />  
+<a asp-action="Index" class="btn btn-secondary">返回</a>
