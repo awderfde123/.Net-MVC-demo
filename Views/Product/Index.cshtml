@@ -1,10 +1,14 @@
 @model List<demo.Models.Product>
+@using System.Security.Claims
 
-<h2>產品清單</h2>
+<h2>產品</h2>
 
-<p>
-    <a asp-action="Detail" class="btn btn-primary">新增產品</a>
-</p>
+   @if (User.IsInRole("Admin"))
+   {
+   <p>
+      <a asp-action="Detail" class="btn btn-primary">新增產品</a>
+   </p>
+   }
 
 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
     @foreach (var item in Model)
@@ -18,7 +22,16 @@
                 <p class="card-text">ID: @item.Id</p>
             </div>
             <div class="card-footer bg-transparent border-top-0">
-                <a asp-action="Detail" asp-route-id="@item.Id" class="btn btn-info btn-sm">內容</a>
+                @if (User.IsInRole("Admin"))
+                {
+
+                    <a asp-action="Detail" asp-route-id="@item.Id" class="btn btn-info btn-sm">內容</a>
+
+                }
+                else
+                {
+                     <p >加入購物車</p>
+                }
             </div>
         </div>
 

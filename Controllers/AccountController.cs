@@ -19,10 +19,10 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    public ActionResult<IEnumerable<Account>> Login(string username, string password)
+    public ActionResult Login(string username, string password)
     {
         var user = _service.GetLoginByUserName(username);
-        if (user != null)
+        if (user != null && user?.Password == password)
         {
             var accessToken = _jwt.GenerateToken(username, user.Role, TimeSpan.FromMinutes(15));
             var refreshToken = _jwt.GenerateToken(username, user.Role, TimeSpan.FromHours(1));
@@ -31,7 +31,7 @@ public class AccountController : Controller
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.Strict // Strict不能第三方登入
-            });
+            }); 
             Response.Cookies.Append("refresh_token", refreshToken, new CookieOptions
             {
                 HttpOnly = true,
@@ -42,8 +42,8 @@ public class AccountController : Controller
             return RedirectToAction("Index", "Product");
         }
 
-        ViewBag.Message = "帳號或密碼錯誤";
-        return View();
+        TempData["Message"] = "帳號或密碼錯誤";
+        return RedirectToAction("Index", "Account");
     }
 
     [HttpGet]

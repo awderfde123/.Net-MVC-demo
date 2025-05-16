@@ -51,7 +51,7 @@ builder.Services.AddAuthentication(options =>
 })
 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
 {
-    options.LoginPath = "/Login/Index";       // 未登入導向頁面
+    options.LoginPath = "/Account/Index";       // 未登入導向頁面
     options.AccessDeniedPath = "/Home/Index"; // 權限不足導向頁面
 });
 
