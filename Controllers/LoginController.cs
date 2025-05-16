@@ -13,13 +13,13 @@ public class LoginController : Controller
     }
 
     [HttpGet]
-    public IActionResult Index()
+    public ActionResult Index()
     {
         return View();
     }
 
     [HttpPost]
-    public IActionResult Index(string username, string password)
+    public ActionResult<IEnumerable<Account>> Index(string username, string password)
     {
         var user = _service.GetLoginByUserName(username);
         if (user != null)

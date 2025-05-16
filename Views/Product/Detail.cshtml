@@ -4,24 +4,51 @@
     bool isNew = Model?.Id == 0;
 }
 
-<form asp-action="Detail" method="post">  
-    <input type="hidden" name="Id" value="@Model.Id" />  
-    <div class="form-group">  
-        <label asp-for="Name">產品名稱</label>  
-        <input asp-for="Name" class="form-control" />  
-        <span asp-validation-for="Name" class="text-danger"></span>  
+<form asp-action="Detail" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="Id" value="@Model?.Id" />
 
-        <label asp-for="Stack">產品數量</label>  
-        <input asp-for="Stack" class="form-control" />  
-        <span asp-validation-for="Stack" class="text-danger"></span>  
-    </div>  
-    <br />  
-    <button type="submit" class="btn btn-success">儲存</button>  
+    <div class="form-group">
+        <label asp-for="Name">名稱</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Price">價格</label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Stack">數量</label>
+        <input asp-for="Stack" class="form-control" />
+        <span asp-validation-for="Stack" class="text-danger"></span>
+    </div>
+    <input type="hidden" name="ImageUrl" value="@Model?.ImageUrl" />
+
+    <div class="form-group">
+        <label>圖片上傳</label>
+        <input type="file" name="imageFile" class="form-control-file" onchange="previewImage(event)" />
+    </div>
+    @if (!string.IsNullOrEmpty(Model?.ImageUrl))
+    {
+    <div class="mb-3">
+        <p>目前圖片</p>
+        <img src="@($"/images/products/{Model.ImageUrl}")" alt="@Model.Name" style="width:160px; height:160px; object-fit:contain; border-radius:8px; background:#f3f4f6;" />
+    </div>
+    }
+    <div class="form-group mt-3" id="previewContainer" style="display: none;">
+        <p>更新後圖片</p>
+        <img id="imagePreview" src="#" alt="預覽圖片" style="max-width: 200px; border: 1px solid #ccc;" />
+    </div>
+
+    <br />
+    <button type="submit" class="btn btn-success">儲存</button>
 </form>  
 
 @if (!isNew)  
 {  
-    <form asp-action="Delete" asp-route-id="@Model.Id" method="post" style="display:inline;">  
+    <form asp-action="Delete" asp-route-id="@Model?.Id" method="post" style="display:inline;">  
         @Html.AntiForgeryToken()  
         <button type="submit" class="btn btn-danger" onclick="return confirm('確定要刪除嗎？')">刪除</button>  
     </form>  
@@ -29,3 +56,28 @@
 
 <br />  
 <a asp-action="Index" class="btn btn-secondary">返回</a>
+
+<script>
+    function previewImage(event) {
+        const input = event.target;
+        const preview = document.getElementById('imagePreview');
+        const container = document.getElementById('previewContainer');
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                container.style.display = 'block'; 
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.src = "#";
+            preview.style.display = 'none';
+            container.style.display = 'none';
+        }
+    }
+</script>
+

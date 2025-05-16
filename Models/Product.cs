@@ -7,5 +7,9 @@ namespace demo.Models
         public string Name { get; set; } = "";
 
         public int Stack { get; set; }
+
+        public int Price { get; set; }
+
+        public string ImageUrl { get; set; } = "";
     }
 }
