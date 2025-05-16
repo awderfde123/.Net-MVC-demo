@@ -3,6 +3,7 @@ using demo.Middlewares;
 using demo.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -16,6 +17,10 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<DemoDbContext>(options =>
     options.UseSqlServer(connectionString));
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<DemoDbContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<demo.Repositories.ProductRepository>();
@@ -54,8 +59,6 @@ builder.Services.AddAuthentication(options =>
     options.LoginPath = "/Account/Index";       // 未登入導向頁面
     options.AccessDeniedPath = "/Home/Index"; // 權限不足導向頁面
 });
-
-
 
 var app = builder.Build();
 
