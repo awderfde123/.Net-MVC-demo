@@ -1,11 +1,11 @@
 @model demo.Models.Account
 
 @{
-    ViewData["Title"] = "µn¤J";
+    ViewData["Title"] = "µù¥U";
 }
-<h2>µn¤J</h2>
+<h2>µù¥U</h2>
 
-<form method="post" action="/Account/Login">
+<form method="post" action="/Account/Register">
     <div class="form-group">
         <label for="username">±b¸¹</label>
         <input type="text" class="form-control" name="username" />
@@ -14,9 +14,13 @@
         <label for="password">±K½X</label>
         <input type="password" class="form-control" name="password" />
     </div>
+    <div class="form-group">
+        <label for="confirmPassword">½T»{±K½X</label>
+        <input type="password" class="form-control" name="confirmPassword" />
+    </div>
     <br />
-    <button type="submit" class="btn btn-primary">µn¤J</button>
-    <a href="/Account/Register" class="btn btn-secondary ml-2">µù¥U</a>
+    <button type="submit" class="btn btn-success">µù¥U</button>
+    <a href="/Account" class="btn btn-link">ªð¦^µn¤J</a>
 </form>
 
 @if (TempData["Message"] != null)

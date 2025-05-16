@@ -4,6 +4,7 @@ using demo.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 [Authorize]
 public class OrderController : Controller
@@ -17,6 +18,31 @@ public class OrderController : Controller
         _userManager = userManager;
     }
 
+    public IActionResult Index()
+    {
+        var userName = _userManager.GetUserId(User);
+        var orders = _context.Orders.Include(o => o.Items).Where(o => o.UserName == userName).Select(o => new Order
+        {
+            Id = o.Id,
+            UserName = o.UserName,
+            CreatedAt = o.CreatedAt,
+            Items = o.Items,
+            TotalAmount = o.Items.Sum(i => i.UnitPrice * i.Quantity)
+        }).ToList();
+
+
+        return View(orders);
+    }
+
+    public IActionResult Detail(int id)
+    {
+        var order = _context.Orders.Include(o => o.Items).Include(o => o.Items).ThenInclude(i => i.Product).FirstOrDefault(o => o.Id == id);
+        if (order == null) return NotFound();
+
+        order.TotalAmount = order.Items.Sum(i => i.UnitPrice * i.Quantity);
+        return View(order);
+    }
+
     [HttpPost]
     public async Task<IActionResult> SubmitOrder([FromBody] List<CartItemDto> items)
     {
@@ -25,11 +51,11 @@ public class OrderController : Controller
             return BadRequest("購物車是空的。");
         } 
 
-        var userId = _userManager.GetUserId(User);
+        var userName = _userManager.GetUserId(User);
 
         var order = new Order
         {
-            UserId = userId!,
+            UserName = userName!,
             CreatedAt = DateTime.UtcNow,
             Items = items.Select(i => new OrderItem
             {

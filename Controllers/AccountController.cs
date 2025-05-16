@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 public class AccountController : Controller
 {
     private readonly JwtService _jwt;
-    private readonly LoginService _service;
-    public AccountController(JwtService jwt, LoginService service)
+    private readonly AccountService _service;
+    public AccountController(JwtService jwt, AccountService service)
     {
         _jwt = jwt;
         _service = service;
@@ -53,5 +53,37 @@ public class AccountController : Controller
         Response.Cookies.Delete("refresh_token");
 
         return RedirectToAction("Index", "Account");
+    }
+
+    [HttpGet]
+    public IActionResult Register()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public IActionResult Register(string username, string password, string confirmPassword)
+    {
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+        {
+            TempData["Message"] = "帳號與密碼不能為空";
+            return View();
+        }
+
+        if (password != confirmPassword)
+        {
+            TempData["Message"] = "密碼與確認密碼不一致";
+            return View();
+        }
+
+        var user = _service.GetLoginByUserName(username);
+        if (user != null)
+        {
+            TempData["Message"] = "帳號已存在";
+            return View();
+        }
+        _service.AddAccount(new Account { UserName=username, Password = password, Role = Role.User });
+        TempData["Message"] = "註冊成功，請登入";
+        return RedirectToAction("Index");
     }
 }

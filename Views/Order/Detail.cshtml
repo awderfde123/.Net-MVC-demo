@@ -1,0 +1,37 @@
+@model demo.Models.Order
+
+@{
+    ViewData["Title"] = $"訂單明細 - #{Model.Id}";
+}
+
+<h2>訂單明細</h2>
+
+<div class="mb-3">
+    <strong>訂單編號：</strong> @Model.Id <br />
+    <strong>建立時間：</strong> @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm") <br />
+    <strong>總金額：</strong> @Model.TotalAmount.ToString("N0")
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>商品名稱</th>
+            <th>單價</th>
+            <th>數量</th>
+            <th>小計</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+                <td>@item.Product.Name</td>
+                <td>@item.UnitPrice.ToString("N0")</td>
+                <td>@item.Quantity</td>
+                <td>@(item.UnitPrice * item.Quantity)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Index" class="btn btn-secondary">返回訂單列表</a>
