@@ -19,7 +19,7 @@
                  class="mx-auto d-block" />
             <div class="card-body">
                 <h5 class="card-title">@item.Name</h5>
-                <p class="card-text">ID: @item.Id</p>
+                <p class="card-text">價格: @item.Price</p>
             </div>
             <div class="card-footer bg-transparent border-top-0">
                 @if (User.IsInRole("Admin"))
@@ -30,10 +30,86 @@
                 }
                 else
                 {
-                     <p >加入購物車</p>
+                     <button class="btn btn-primary" onclick="addToCart('@item.Name', @item.Price)">加入購物車</button>
                 }
             </div>
         </div>
 
     }
 </div>
+<div class="offcanvas offcanvas-end" tabindex="-1" id="cartDrawer" aria-labelledby="cartDrawerLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="cartDrawerLabel">購物車</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div id="cartItems"></div>
+    <hr />
+    <div class="d-flex justify-content-between">
+      <strong>總計：</strong>
+      <strong id="cartTotal">$0</strong>
+    </div>
+  </div>
+</div>
+
+<script>
+    let cart = [];
+
+    function addToCart(name, price) {
+        const isAuthenticated = @((User.Identity != null && User.Identity.IsAuthenticated).ToString().ToLower());
+
+        if (!isAuthenticated) {
+            alert("請先登入才能加入購物車！");
+            window.location.href = '/Account';
+            return;
+        }
+
+        // 檢查是否已存在商品
+        const existing = cart.find(item => item.name === name);
+        if (existing) {
+            existing.qty += 1;
+            existing.subtotal = existing.qty * existing.price;
+        } else {
+            cart.push({
+                name: name,
+                price: price,
+                qty: 1,
+                subtotal: price
+            });
+        }
+
+        renderCart();
+    }
+
+    function renderCart() {
+        const container = document.getElementById('cartItems');
+        const totalElement = document.getElementById('cartTotal');
+        container.innerHTML = "";
+
+        let total = 0;
+        cart.forEach(item => {
+            total += item.subtotal;
+
+            const div = document.createElement("div");
+            div.classList.add("mb-2");
+            div.innerHTML = `
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <strong>${item.name}</strong><br />
+                        $${item.price} x ${item.qty}
+                    </div>
+                    <div>
+                        $${item.subtotal}
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+
+        totalElement.textContent = `$${total}`;
+
+        const cartDrawer = new bootstrap.Offcanvas(document.getElementById('cartDrawer'));
+        cartDrawer.show();
+    }
+</script>
+
