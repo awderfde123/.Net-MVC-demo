@@ -15,7 +15,7 @@ namespace demo.Controllers
             _service = service;
         }
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public ActionResult<IEnumerable<Product>> Index()
         {
             var products = _service.GetProducts();

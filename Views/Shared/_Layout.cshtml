@@ -26,6 +26,18 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/Product">產品</a>
                     </li>
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Account/Logout">登出</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Account">登入</a>
+                        </li>
+                    }
                 </ul>
             </div>
         </div>

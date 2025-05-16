@@ -1,3 +1,4 @@
+using demo.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -18,20 +19,22 @@ namespace demo.Services
             _issuer = configuration["JwtSettings:Issuer"]!;
         }
 
-        public string GenerateToken(string userId, TimeSpan expiresIn)
+        public string GenerateToken(string userId, Role role, TimeSpan expiresIn)
         {
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, userId),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            };
+
+        new Claim(JwtRegisteredClaimNames.Sub, userId),
+        new Claim(ClaimTypes.Role, role.ToString()),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+    };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_signKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
                 issuer: _issuer,
-                audience: null,
+                audience: null, // 沒有驗證 Audience，可以維持 null 或是設預設值
                 claims: claims,
                 expires: DateTime.UtcNow.Add(expiresIn),
                 signingCredentials: creds
@@ -40,7 +43,8 @@ namespace demo.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public bool ValidateToken(string token)
+
+        public ClaimsPrincipal? ValidateToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var validationParams = new TokenValidationParameters
@@ -51,19 +55,20 @@ namespace demo.Services
                 ValidateLifetime = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_signKey)),
                 ValidateIssuerSigningKey = true,
-                ClockSkew = TimeSpan.Zero
+                ClockSkew = TimeSpan.Zero // 避免伺服器時間不一致導致驗證通過
             };
 
             try
             {
-                tokenHandler.ValidateToken(token, validationParams, out _);
-                return true;
+                var principal = tokenHandler.ValidateToken(token, validationParams, out _);
+                return principal;
             }
             catch
             {
-                return false;
+                return null;
             }
         }
+
 
         public bool TryParseJwt(string token, out JwtSecurityToken? jwtToken)
         {
