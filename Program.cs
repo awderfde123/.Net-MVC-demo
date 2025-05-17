@@ -2,6 +2,7 @@
 using demo.Middlewares;
 using demo.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
@@ -58,6 +59,12 @@ builder.Services.AddAuthentication(options =>
 {
     options.LoginPath = "/Account/Index";       // 未登入導向頁面
     options.AccessDeniedPath = "/Home/Index"; // 權限不足導向頁面
+})
+.AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
+{
+    options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
+    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
+    options.CallbackPath = "/signin-google";
 });
 
 var app = builder.Build();
