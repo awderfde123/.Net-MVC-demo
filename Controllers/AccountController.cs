@@ -1,6 +1,9 @@
-﻿using demo.Models;
+﻿using demo.Migrations;
+using demo.Models;
 using demo.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Role = demo.Models.Role;
 
 public class AccountController : Controller
 {
@@ -22,7 +25,14 @@ public class AccountController : Controller
     public ActionResult Login(string username, string password)
     {
         var user = _service.GetLoginByUserName(username);
-        if (user != null && user?.Password == password)
+        var hasher = new PasswordHasher<Account>();
+        if (user == null)
+        {
+            TempData["Message"] = "帳號或密碼錯誤";
+            return RedirectToAction("Index", "Account");
+        }
+        var result = hasher.VerifyHashedPassword(user, user.Password, password);
+        if (user != null && result == PasswordVerificationResult.Success)
         {
             var accessToken = _jwt.GenerateToken(username, user.Role, TimeSpan.FromMinutes(15));
             var refreshToken = _jwt.GenerateToken(username, user.Role, TimeSpan.FromHours(1));
@@ -82,7 +92,8 @@ public class AccountController : Controller
             TempData["Message"] = "帳號已存在";
             return View();
         }
-        _service.AddAccount(new Account { UserName=username, Password = password, Role = Role.User });
+        var hasher = new PasswordHasher<Account>();
+        _service.AddAccount(new Account { UserName=username, Password = hasher.HashPassword(new Account(), password), Role = Role.User });
         TempData["Message"] = "註冊成功，請登入";
         return RedirectToAction("Index");
     }
