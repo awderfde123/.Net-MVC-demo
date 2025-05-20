@@ -21,13 +21,13 @@ public class AccountController : Controller
     }
 
     [HttpGet]
-    public IActionResult Index()
+    public ActionResult Index()
     {
         return View();
     }
 
     [HttpPost]
-    public IActionResult Login(string username, string password)
+    public ActionResult Login(string username, string password)
     {
         var user = _service.GetLoginByUserName(username);
         var hasher = new PasswordHasher<Account>();
@@ -65,14 +65,14 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    public IActionResult GoogleLogin(string returnUrl = "/Product/Index")
+    public ActionResult GoogleLogin(string returnUrl = "/Product/Index")
     {
         var properties = new AuthenticationProperties { RedirectUri = Url.Action("GoogleResponse", new { returnUrl }) };
         return Challenge(properties, GoogleDefaults.AuthenticationScheme);
     }
 
     [HttpGet]
-    public async Task<IActionResult> GoogleResponse(string returnUrl = "/Product/Index")
+    public async Task<ActionResult> GoogleResponse(string returnUrl = "/Product/Index")
     {
         var result = await HttpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
         if (!result.Succeeded)
@@ -142,7 +142,7 @@ public class AccountController : Controller
 
 
     [HttpGet]
-    public IActionResult Logout()
+    public ActionResult Logout()
     {
         Response.Cookies.Delete("access_token");
         Response.Cookies.Delete("refresh_token");
@@ -150,13 +150,13 @@ public class AccountController : Controller
     }
 
     [HttpGet]
-    public IActionResult Register()
+    public ActionResult Register()
     {
         return View();
     }
 
     [HttpPost]
-    public IActionResult Register(string username, string password, string confirmPassword)
+    public ActionResult Register(string username, string password, string confirmPassword)
     {
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
