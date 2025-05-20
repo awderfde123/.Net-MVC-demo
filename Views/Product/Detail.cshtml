@@ -28,7 +28,7 @@
 
     <div class="form-group">
         <label>圖片上傳</label>
-        <input type="file" name="imageFile" class="form-control-file" onchange="previewImage(event)" />
+        <input type="file" name="imageFile" accept=".jpg,.jpeg,.png" class="form-control-file" onchange="previewImage(event)" />
     </div>
     @if (!string.IsNullOrEmpty(Model?.ImageUrl))
     {

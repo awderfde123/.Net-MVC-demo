@@ -18,7 +18,7 @@ public class OrderController : Controller
         _userManager = userManager;
     }
 
-    public IActionResult Index()
+    public ActionResult<Order> Index()
     {
         var userName = _userManager.GetUserId(User);
         var orders = _context.Orders.Include(o => o.Items).Where(o => o.UserName == userName).Select(o => new Order
@@ -34,7 +34,7 @@ public class OrderController : Controller
         return View(orders);
     }
 
-    public IActionResult Detail(int id)
+    public ActionResult<Order> Detail(int id)
     {
         var order = _context.Orders.Include(o => o.Items).Include(o => o.Items).ThenInclude(i => i.Product).FirstOrDefault(o => o.Id == id);
         if (order == null) return NotFound();
@@ -44,7 +44,7 @@ public class OrderController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> SubmitOrder([FromBody] List<CartItemDto> items)
+    public async Task<ActionResult> SubmitOrder([FromBody] List<CartItemDto> items)
     {
         if (items == null || !items.Any())
         {

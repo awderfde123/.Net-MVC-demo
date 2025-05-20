@@ -2,7 +2,6 @@
 
 # 此階段用於以快速模式從 VS 執行時 (偵錯設定的預設值)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
@@ -27,6 +26,6 @@ RUN dotnet publish "./demo.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:Us
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENV ASPNETCORE_ENVIRONMENT = Docker
+ENV ASPNETCORE_ENVIRONMENT=Docker
 
 ENTRYPOINT ["dotnet", "demo.dll"]

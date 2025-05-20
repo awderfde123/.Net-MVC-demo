@@ -10,6 +10,6 @@ namespace demo.Models
 
         public int Price { get; set; }
 
-        public string ImageUrl { get; set; } = "";
+        public string? ImageUrl { get; set; } = "";
     }
 }
